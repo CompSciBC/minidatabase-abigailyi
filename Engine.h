@@ -71,12 +71,12 @@ struct Engine {
 
         string key = toLower(heap[rid].last);
         vector<int> *vecPtr = lastIndex.find(key);
-        if (!vecPtr) {
+        if (vecPtr) {
             auto &vec = *vecPtr;
             
             for (auto it = vec.begin(); it != vec.end(); ++it) {
                 if (*it == rid) {
-                    vec.erase(rid);
+                    vec.erase(it);
                     break;
                 }
             }
