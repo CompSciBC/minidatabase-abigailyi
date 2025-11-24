@@ -28,9 +28,9 @@ struct Engine {
     // Returns the record ID (RID) in the heap.
     int insertRecord(const Record &recIn) {
         Record rec = recIn;
-        rec.deleted = false;
+        rec.deleted = false; 
 
-        int rid = <int>(heap.size());
+        int rid = static_cast<int>(heap.size()); // error here so added static_cast
         heap.push_back(rec);
 
         idIndex.insert(rec.id, rid);
@@ -51,7 +51,42 @@ struct Engine {
     // Deletes a record logically (marks as deleted and updates indexes)
     // Returns true if deletion succeeded.
     bool deleteById(int id) {
-        //TODO
+        int *ridPtr = idIndex.find(id);
+        if (!ridPtr) {
+            return false;
+        }
+
+        int rid = *ridPtr;
+
+        if (rid < 0 || rid >= static_cast<int>(heap.size())) {
+            return false;
+        }
+
+        if (heap[rid].deleted) {
+            return false;
+        }
+
+        heap[rid].deleted = true;
+        idIndex.erase(id);
+
+        string key = toLower(heap[rid].last);
+        vector<int> *vecPtr = lastIndex.find(key);
+        if (!vecPtr) {
+            auto &vec = *vecPtr;
+            
+            if (auto it = vec.begin(), it != vec.end(); ++it) {
+                if (*it == rid) {
+                    vec.delete(rid);
+                    break;
+                }
+            }
+
+            if (vec.empty()) {
+                lastIndex.erase(key);
+            }
+        }
+
+        return true;
     }
 
     // Finds a record by student ID.
