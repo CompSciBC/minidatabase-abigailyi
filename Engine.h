@@ -74,7 +74,7 @@ struct Engine {
         if (!vecPtr) {
             auto &vec = *vecPtr;
             
-            if (auto it = vec.begin(), it != vec.end(); ++it) {
+            if (auto it = vec.begin(); it != vec.end(); ++it) {
                 if (*it == rid) {
                     vec.delete(rid);
                     break;
