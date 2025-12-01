@@ -97,12 +97,12 @@ struct Engine {
         int *ridPtr = idIndex.find(id);
         cmpOut = idIndex.comparisons;
 
-        if (ridPtr == nullPtr) {
-            return nullPtr;
+        if (ridPtr == nullptr) {
+            return nullptr;
         }
         int rid = *ridPtr;
 
-        if (rid < 0 || rid >= static_cast<int>heap.size()) {
+        if (rid < 0 || rid >= static_cast<int>(heap.size())) {
             return nullptr;
         }
         if (heap[rid].deleted) {
@@ -115,13 +115,43 @@ struct Engine {
     // Returns all records with ID in the range [lo, hi].
     // Also reports the number of key comparisons performed.
     vector<const Record *> rangeById(int lo, int hi, int &cmpOut) {
-        //TODO
+        vector<const Record *> results;
+        idIndex.resetMetrics();
+
+        idIndex.rangeApply(lo, hi, [&](const int &key, int &rid) {
+            if (rid >= 0 && rid < static_cast<int>(heap.size()) && !heap[rid].deleted) {
+                results.push_back(&heap[rid]);
+            }
+        });
+
+        cmpOut = idIndex.comparisons;
+        return results;
     }
 
     // Returns all records whose last name begins with a given prefix.
     // Case-insensitive using lowercase comparison.
     vector<const Record *> prefixByLast(const string &prefix, int &cmpOut) {
-        //TODO
+        vector<const Record *> results;
+        lastIndex.resetMetrics();
+
+        string lowerPrefix = toLower(prefix);
+        string upperBound = lowerPrefix;
+        if (!upperBound.empty()) {
+            upperBound.back()++;
+        } else {
+            upperBound = string(1, char(127)); // handle empty prefix case
+        }
+
+        lastIndex.rangeApply(lowerPrefix, upperBound, [&](const string &key, vector<int> &ridVec) {
+            for (int rid : ridVec) {
+                if (rid >= 0 && rid < static_cast<int>(heap.size()) && !heap[rid].deleted) {
+                    results.push_back(&heap[rid]);
+                }
+            }
+        });
+
+        cmpOut = lastIndex.comparisons;
+        return results;
     }
 };
 
