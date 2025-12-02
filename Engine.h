@@ -30,7 +30,7 @@ struct Engine {
         Record rec = recIn;
         rec.deleted = false; 
 
-        int rid = static_cast<int>(heap.size()); // error here so added static_cast
+        int rid = static_cast<int>(heap.size());
         heap.push_back(rec);
 
         idIndex.insert(rec.id, rid);

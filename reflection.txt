@@ -1,0 +1,39 @@
+CS 300 – Assignment #2
+Reflection for Abigail Yi
+
+** What challenges you faced **
+
+Initially, I had a difficult time completing the methods in the Engine header file.
+This was because I was lacking in understanding the conceptual map of how the heap vector and BSTs (idIndex and lastIndex)
+worked together to simulate a database engine. I was so used to working with only one data structure and had to stop and
+really think about how the data structures worked together and what each structure contained. From my current understanding,
+the vector heap contains all the data as Records while the BSTs hold key and value associations to help quickly lookup which
+Record in the heap we are trying to return. The BST idIndex holds id -> rid and lastIndex holds last -> vector<rid>.
+
+I also had a hard time implementing the rangeById() and prefixByLast() methods due to their usage of lambda functions and
+understanding what we were doing. Now I can see why we needed lambda functions, because we cannot have a method both traverse
+a BST and perform a loop “check” on each node in the same method. With the lambda function, we can scan each node that rangeApply()
+traverses through the BST to find which records are within the lo, hi values of the range or has a last name containing the specified
+prefix. I think it is funny how much I struggled with lambda functions because I have never seen a function passed as a parameter and
+it broke my brain at first.
+
+** What you learned **
+
+-	The reason why we use soft and hard delete implementations is to make sure that RIDs stay stable. If we deleted elements in a
+    vector and shifted them around, that would change their indices and invalidate all the RIDs stored inside the BSTs. So we soft
+    delete in heap to retain RIDs and hard delete in the BSTs.
+
+-	Using iterators for erase to remain consistent across other various container types like list, set, and map. This requirement
+    allows us to write generic algorithms without needing to know the container’s specific access methods. Also, that we only do
+    this to the RIDs in the vector associated to the keys in the BST lastIndex but not the RIDs in heap for the reason above.
+
+-	Lambda function components (like lambda capture) and why we need them! They’re pretty awesome :D
+
+-	How relational integrity (a database concept) works via the data structures used in the assignment. For example, if we remove
+    from idIndex, then we must find the correct lastName key, remove the corresponding RID from the vector in lastIndex, and if
+    no other RIDs remain in that vector, remove the lastName node from lastIndex as well. I hadn’t thought about how relational
+    integrity actually works under the hood so it was really cool to see it in action.
+
+-   How to use git and github. I've had very light experience with them before but felt very uncomfortable using them. Working with
+    git and github again in this assignment helped me build confidence in using it. A classmate gave me another resource to keep
+    practicing using git so I will practice further!
